@@ -1,0 +1,37 @@
+name: powershell-networkdrive-map-steps
+version: 1.0.0
+rundeckPluginVersion: 1.2
+author: Rundeck
+date: Tue Dec 12 2017
+providers:
+  - name: powershell-networkdrive-map-step
+    service: RemoteScriptNodeStep
+    title: 'Powershell / Network Drive / Map'
+    description: 'Map the network drive'
+    plugin-type: script
+    script-interpreter: "powershell -NonInteractive -Noprofile -ExecutionPolicy Bypass -Command"
+    script-file: MapNetworkDrive.ps1
+    script-args: '-DriveLetter ${config.DriveLetter} -Path ${config.Path}'
+    config:
+      - type: String
+        name: DriveLetter
+        title: Drive Letter
+        description: 'the drive letter'
+      - type: String
+        name: Path
+        title: 'The path'
+  - name: powershell-networkdrive-unmap-step
+    service: RemoteScriptNodeStep
+    title: 'Powershell / Network Drive / Unmap'
+    description: 'Unmap the network drive'
+    plugin-type: script
+    script-interpreter: "powershell -NonInteractive -Noprofile -ExecutionPolicy Bypass -Command"
+    script-file: UnmapNetworkDrive.ps1
+    script-args: '-DriveLetter ${config.DriveLetter} -Path ${config.Path}'
+    config:
+      - type: String
+        name: DriveLetter
+        title: Drive Letter
+        description: 'the drive letter'
+
+
