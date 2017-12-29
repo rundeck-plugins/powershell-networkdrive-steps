@@ -27,7 +27,7 @@ providers:
     plugin-type: script
     script-interpreter: "powershell -NonInteractive -Noprofile -ExecutionPolicy Bypass -Command"
     script-file: UnmapNetworkDrive.ps1
-    script-args: '-DriveLetter ${config.DriveLetter} -Path ${config.Path}'
+    script-args: '-DriveLetter ${config.DriveLetter}'
     config:
       - type: String
         name: DriveLetter
