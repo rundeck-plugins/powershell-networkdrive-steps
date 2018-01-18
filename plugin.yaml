@@ -11,15 +11,17 @@ providers:
     plugin-type: script
     script-interpreter: "powershell -NonInteractive -Noprofile -ExecutionPolicy Bypass -Command"
     script-file: MapNetworkDrive.ps1
-    script-args: '-DriveLetter ${config.DriveLetter} -Path ${config.Path}'
+    script-args: '-DriveLetter ${config.DriveLetter} -Path ${config.Path} '
     config:
       - type: String
         name: DriveLetter
         title: Drive Letter
         description: 'the drive letter'
+        required: true
       - type: String
         name: Path
         title: 'The path'
+        required: true
   - name: powershell-networkdrive-unmap-step
     service: RemoteScriptNodeStep
     title: 'Powershell / Network Drive / Unmap'
@@ -33,5 +35,4 @@ providers:
         name: DriveLetter
         title: Drive Letter
         description: 'the drive letter'
-
-
+        required: true

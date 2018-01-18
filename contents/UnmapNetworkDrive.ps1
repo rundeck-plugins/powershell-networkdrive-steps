@@ -17,11 +17,19 @@ Param (
 	[string]$DriveLetter
 )
 
-Begin {
+process {
+
 	try{
 
 		Write-Host "Removing DriveLetter: $($DriveLetter)"
 
+		$username = $env:RD_NODE_USERNAME
+		$jobName =  "RundeckJobs-Mapping"
+		
+		Get-ScheduledJob  | Where-Object {$_.name -eq $jobName} | ForEach-Object { 
+			Unregister-ScheduledJob -Name $($_.name) -Force
+		}
+		
 		If (-Not (Test-Path "$($DriveLetter):"))
 		{
 			Write-Host "Drive doesn't exists, skipping removing"
@@ -29,8 +37,7 @@ Begin {
 
 		}
 
- 		Remove-PSDrive -Name $DriveLetter
-
+		Remove-PSDrive -Name $DriveLetter
 
 	}Catch{
         Write-Error "Error: $($_.Exception.Message) - Line Number: $($_.InvocationInfo.ScriptLineNumber)"
