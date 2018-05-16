@@ -16,8 +16,11 @@
 #>
 
 Param (
-	[string]$DriveLetter,
-	[string]$Path
+	[string]$Driver,
+	[string]$Path,
+	[string]$User,
+	[string]$Pass,
+    [string]$Override
 	)
 
 begin {
@@ -34,43 +37,48 @@ process {
         	exit 1
 		}
 
-		Write-Host "DriveLetter: $($DriveLetter)"
+		Write-Host "Driver: $($Driver)"
 		Write-Host "Path directory: $($Path)"
+        Write-Host "Username: $($User)"
+        Write-Host "Override: $($Override)"
 
-
-		If ((Test-Path "$($DriveLetter):"))
+        If ((Test-Path "$($Driver):") -and $Override -eq "false")
 		{
 			Write-Host "Drive already exists, skipping mapping"
 			exit 0
 
 		}else{
 
-			$nodeUsername = $env:RD_NODE_USERNAME
+
+            If ((Test-Path "$($Driver):") -and $Override -eq "true"){
+                Invoke-Expression -Command "net use $($Driver): /delete"
+            }
+
 			$jobName =  "RundeckJobs-Mapping"
 
-			Get-ScheduledJob  | Where-Object {$_.name -Match "$($jobName)*"} | ForEach-Object { 
-				param($jobName) 
-				write-host "Job exists, removing"
-				Unregister-ScheduledJob -Name $jobName -Force 
-            } -ErrorAction SilentlyContinue -ArgumentList ($jobName) | Out-Null
+            Get-ScheduledJob  | Where-Object {$_.name -eq $jobName} | ForEach-Object {
+                write-host "Job exists, removing!"
+                Unregister-ScheduledJob -Name $($_.name) -Force
+            }
 
-			Register-ScheduledJob -Name $jobName -ScriptBlock { 
-					param($DriveLetter,$Path) 
-					New-PSDrive -Persist  -Scope Global  -Name $DriveLetter -PSProvider "FileSystem" -Root $Path 
-				} -ArgumentList ($DriveLetter,$Path)   | Out-Null
-			
-			(Get-ScheduledJob -Name $jobName).StartJob() | Out-Null
+			Register-ScheduledJob -Name $jobName -ScriptBlock {
+					param($Driver,$Path,$User,$Pass)
 
-			Get-Job | Wait-Job | Out-Null
-			
-			Write-Host "Drive mapped successfully"
+                    try{
+                        Invoke-Expression -Command "net use $($Driver): $($Path) $($Pass) /user:$($User)"
+                        #New-PSDrive -Persist  -Scope Global  -Name $Driver -PSProvider "FileSystem" -Root $Path
+                    }catch [System.Exception]{
+                        Write-host "Error creating mapping"
+                    }
 
+				} -ArgumentList ($Driver,$Path,$User,$Pass) | Out-Null
+
+			Write-Host "Drive mapped registered"
 		} 		
 
 	}Catch{
         Write-Error "Error: $($_.Exception.Message) - Line Number: $($_.InvocationInfo.ScriptLineNumber)"
         exit 1
     }
-
 
 }

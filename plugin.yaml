@@ -9,19 +9,41 @@ providers:
     title: 'Powershell / Network Drive / Map'
     description: 'Map the network drive'
     plugin-type: script
-    script-interpreter: "powershell -NonInteractive -Noprofile -ExecutionPolicy Bypass -Command"
+    script-interpreter: powershell -Command
     script-file: MapNetworkDrive.ps1
-    script-args: '-DriveLetter ${config.DriveLetter} -Path ${config.Path} '
+    script-args: "-Driver ${config.DriveLetter} -Path ${config.Path} -User ${config.driverUser} -Pass ${config.driverPassword} -Override ${config.override}"
     config:
       - type: String
         name: DriveLetter
         title: Drive Letter
-        description: 'the drive letter'
+        description: 'the drive letter, for example "F"'
         required: true
       - type: String
         name: Path
         title: 'The path'
+        description: 'Folder path, for example "\\server\path"'
         required: true
+      - name: driverUser
+        title: "Username"
+        description: "Username"
+        type: String
+        required: True
+      - name: driverPassword
+        title: Password Storage Path
+        type: String
+        required: True
+        description: "Password storage password path."
+        renderingOptions:
+          selectionAccessor: "STORAGE_PATH"
+          valueConversion: "STORAGE_PATH_AUTOMATIC_READ"
+          storage-path-root: "keys"
+      - name: override
+        title: Override drive
+        type: Boolean
+        required: true
+        description: "override of existing drive mapping."
+        scope: InstanceOnly
+        default: false
   - name: powershell-networkdrive-unmap-step
     service: RemoteScriptNodeStep
     title: 'Powershell / Network Drive / Unmap'

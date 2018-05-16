@@ -37,7 +37,8 @@ process {
 
 		}
 
-		Remove-PSDrive -Name $DriveLetter
+		#Remove-PSDrive -Name $DriveLetter
+		Invoke-Expression -Command "net use $($DriveLetter): /delete"
 
 	}Catch{
         Write-Error "Error: $($_.Exception.Message) - Line Number: $($_.InvocationInfo.ScriptLineNumber)"
