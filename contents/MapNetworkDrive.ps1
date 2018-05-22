@@ -31,12 +31,6 @@ process {
 
 	try{
 
-		If (-Not ( Test-Path $Path) )
-		{
-			Write-Error "Error: destination path doesn't exists"
-        	exit 1
-		}
-
 		Write-Host "Driver: $($Driver)"
 		Write-Host "Path directory: $($Path)"
         Write-Host "Username: $($User)"
