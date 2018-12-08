@@ -48,7 +48,7 @@ process {
                 Invoke-Expression -Command "net use $($Driver): /delete"
             }
 
-			$jobName =  "RundeckJobs-Mapping"
+	    $jobName =  "RundeckJobs-Mapping$($Driver)"
 
             Get-ScheduledJob  | Where-Object {$_.name -eq $jobName} | ForEach-Object {
                 write-host "Job exists, removing!"
