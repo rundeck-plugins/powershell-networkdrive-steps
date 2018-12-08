@@ -54,12 +54,15 @@ process {
                 write-host "Job exists, removing!"
                 Unregister-ScheduledJob -Name $($_.name) -Force
             }
+	    
+	    $Path = $Path -replace '^\s'
+	    $Path = $Path -replace '\s$'
 
 			Register-ScheduledJob -Name $jobName -ScriptBlock {
 					param($Driver,$Path,$User,$Pass)
 
                     try{
-                        Invoke-Expression -Command "net use $($Driver): $($Path) $($Pass) /user:$($User)"
+                        Invoke-Expression -Command "net use $($Driver): `"$($Path)`" $($Pass) /user:$($User)"
                         #New-PSDrive -Persist  -Scope Global  -Name $Driver -PSProvider "FileSystem" -Root $Path
                     }catch [System.Exception]{
                         Write-host "Error creating mapping"
